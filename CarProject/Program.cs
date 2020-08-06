@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Timers;
+
+
+
 
 namespace CarProject
 {
+ 
     #region
     class Car
     {
@@ -26,14 +32,33 @@ namespace CarProject
     #endregion
     class Program
     {
+        public static int cSpeed { get; set; }
+        public static int cDirection { get; set; }
+
+        public static int rSpeed { get; set; }
+
+        private static System.Timers.Timer aTimer;
         static void Main(string[] args)
         {
             string val;
             Car myCar = new Car();
-            int cSpeed = 0;
-            int cDirection = 0;
-            int rSpeed = 0;
+            // int cSpeed = 0;
+            // int cDirection = 0;
+            //int rSpeed = 0;
             bool cEngine = false;
+
+            //timer
+            #region
+            System.Timers.Timer newTimer = new System.Timers.Timer();
+            newTimer.Elapsed += new ElapsedEventHandler(DisplayTimeEvent);
+            newTimer.Interval = 2000;
+
+
+            /*while (Console.Read() != 'q')
+            {
+                ;    // we can write anything here if we want, leaving this part blank won’t bother the code execution.
+            }*/
+            #endregion
 
             //ask user about starting engine and make sure answer is "yes"
             Console.WriteLine("Start your car? yes/no");
@@ -51,6 +76,8 @@ namespace CarProject
             //engine must be on before moving
             while (cEngine == true)
             {
+                //start timer when engine is on
+                newTimer.Start();
                 //user input and car moving after
                 #region
                 var ch = Console.ReadKey(false).Key;
@@ -62,14 +89,14 @@ namespace CarProject
                         {
                             cSpeed = myCar.Speed(cSpeed + 5);
                             rSpeed = cSpeed * -1;
-                            Console.WriteLine("slowing down reverse speed to " + rSpeed + "km/h");
+                            //Console.WriteLine("slowing down reverse speed to " + rSpeed + "km/h");
                             break;
                         }
                         //normal thrust
                         else
                         { 
                         cSpeed = myCar.Speed(cSpeed + 5);
-                        Console.WriteLine("speeding up: " + cSpeed + "Km/h");
+                        //Console.WriteLine("speeding up: " + cSpeed + "Km/h");
                         break;
                         }
                     case ConsoleKey.S:
@@ -78,14 +105,14 @@ namespace CarProject
                         {
                             cSpeed = myCar.Speed(cSpeed - 5);
                             rSpeed = cSpeed * -1;
-                            Console.WriteLine("reversing at " + rSpeed + "km/h");
+                            //Console.WriteLine("reversing at " + rSpeed + "km/h");
                             break;
                         }
                         //normal slowing down if cspeed is on positive
                         else
                         {
                             cSpeed = myCar.Speed(cSpeed - 5);
-                            Console.WriteLine("Slowing down: " + cSpeed + "Km/h");
+                            //Console.WriteLine("Slowing down: " + cSpeed + "Km/h");
                             break;
                         }
 
@@ -94,7 +121,7 @@ namespace CarProject
                         if (cSpeed != 0)
                         {
                             cDirection = myCar.Direction(cDirection - 15);
-                            Console.WriteLine("Turning left " + cDirection + "°");
+                            //Console.WriteLine("Turning left " + cDirection + "°");
                             break;
                         }
                         //car turning disabled when speed is at 0
@@ -106,7 +133,7 @@ namespace CarProject
                         if (cSpeed != 0)
                         {
                             cDirection = myCar.Direction(cDirection + 15);
-                            Console.WriteLine("Turning right " + cDirection + "°");
+                            //Console.WriteLine("Turning right " + cDirection + "°");
                             break;
                         }
                         //car turning disabled when speed is at 0
@@ -132,9 +159,19 @@ namespace CarProject
                 }
 
 
-                          
             }
-           
+
+
+        }
+        public static void DisplayTimeEvent(object source, ElapsedEventArgs e)
+        {
+            if (cSpeed < 0)
+            {
+                Console.WriteLine("Current Reverse Speed: " + rSpeed.ToString() + " km/h and direction is: " + cDirection.ToString() + "°");
+            }
+            else
+                Console.WriteLine("Current Speed: " + cSpeed.ToString() + " km/h and direction is: " + cDirection.ToString() + "°");
+
         }
     }
 }
